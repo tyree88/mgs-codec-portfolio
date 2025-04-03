@@ -47,18 +47,62 @@ app.use((req, res, next) => {
     throw err;
   });
 
-  // Run Svelte app in a separate process
+  // Run Svelte app in a separate process with enhanced reliability
   try {
-    import('child_process').then(({ exec }) => {
-      exec('node svelte-start.js', (error: Error | null, stdout: string, stderr: string) => {
-        if (error) {
-          console.error(`Svelte app execution error: ${error}`);
-          return;
-        }
-        console.log(`Svelte app output: ${stdout}`);
-        if (stderr) console.error(`Svelte app stderr: ${stderr}`);
+    import('child_process').then(({ spawn }) => {
+      // Use spawn instead of exec for better stream handling
+      const svelteProcess = spawn('node', ['svelte-start.js'], {
+        stdio: ['ignore', 'pipe', 'pipe'],
+        detached: false, // Keep tied to parent process
       });
-      log("Started Svelte app in background");
+      
+      // Pipe output to console with prefixes for better readability
+      svelteProcess.stdout.on('data', (data) => {
+        const lines = data.toString().split('\n');
+        lines.filter((line: string) => line.trim() !== '').forEach((line: string) => {
+          log(`[SVELTE] ${line}`, 'svelte');
+        });
+      });
+      
+      svelteProcess.stderr.on('data', (data) => {
+        const lines = data.toString().split('\n');
+        lines.filter((line: string) => line.trim() !== '').forEach((line: string) => {
+          console.error(`[SVELTE ERROR] ${line}`);
+        });
+      });
+      
+      // Handle process exit
+      svelteProcess.on('exit', (code, signal) => {
+        if (code !== 0) {
+          console.error(`Svelte process exited with code ${code}, signal: ${signal}`);
+          // Attempt to restart after 5 seconds
+          setTimeout(() => {
+            log("Attempting to restart Svelte process...", 'svelte');
+            try {
+              spawn('node', ['svelte-start.js'], {
+                stdio: 'inherit',
+                detached: false,
+              });
+            } catch (e) {
+              console.error("Failed to restart Svelte process:", e);
+            }
+          }, 5000);
+        } else {
+          log("Svelte process exited normally", 'svelte');
+        }
+      });
+      
+      // Log startup
+      log("Started Svelte app in background with enhanced monitoring", 'svelte');
+      
+      // Clean up on server shutdown
+      process.on('exit', () => {
+        try {
+          svelteProcess.kill();
+        } catch (e) {
+          // Ignore errors when killing process during shutdown
+        }
+      });
     });
   } catch (error: unknown) {
     console.error("Failed to start Svelte app:", error);

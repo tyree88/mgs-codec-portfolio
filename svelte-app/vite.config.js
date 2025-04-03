@@ -14,16 +14,27 @@ export default defineConfig({
   },
   server: {
     hmr: {
-      // Ensure WebSocket connectivity works through the proxy
+      // Enhance WebSocket connectivity through the proxy
       protocol: 'ws',
       host: '0.0.0.0',
       port: 5173,
-      clientPort: 5000, // This helps with proxied connections
+      clientPort: 5000, // For proxied connections
+      path: '/ws', // Match our proxy path
+      timeout: 60000, // Longer timeout
     },
-    cors: true,
+    cors: {
+      origin: '*', // Allow all origins for development
+    },
     strictPort: true,
+    port: 5173,
+    host: '0.0.0.0',
+    fs: {
+      strict: false, // Allow serving files from outside of root directory
+      allow: ['..'], // Allow serving from parent directory
+    },
     watch: {
-      usePolling: true, // Helps with some environments where file watching is unreliable
+      usePolling: true, // Better file watching reliability
+      interval: 1000, // Polling interval
     }
   }
 });

@@ -32,7 +32,29 @@
     
     // Create an audio element for the ringtone
     ringtoneAudio = new Audio();
-    ringtoneAudio.src = '/audio/codec-ringtone.mp3';
+    
+    // Try to load pregenerated audio file, or generate one on the fly
+    import { generateRingtone } from './generateRingtone.js';
+    
+    fetch('/audio/codec-ringtone.mp3').then(response => {
+      if (response.ok) {
+        // Use existing file
+        ringtoneAudio.src = '/audio/codec-ringtone.mp3';
+      } else {
+        // Generate ringtone programmatically
+        console.log('Generating codec ringtone programmatically...');
+        generateRingtone().then(blob => {
+          ringtoneAudio.src = URL.createObjectURL(blob);
+        });
+      }
+    }).catch(err => {
+      console.error('Error loading ringtone:', err);
+      // Fallback - generate ringtone
+      generateRingtone().then(blob => {
+        ringtoneAudio.src = URL.createObjectURL(blob);
+      });
+    });
+    
     ringtoneAudio.loop = true;
     
     // Initial boot sequence animation 
@@ -47,6 +69,12 @@
     return () => {
       if (ringtoneAudio) {
         ringtoneAudio.pause();
+        
+        // Clean up object URLs if we created any
+        if (ringtoneAudio.src && ringtoneAudio.src.startsWith('blob:')) {
+          URL.revokeObjectURL(ringtoneAudio.src);
+        }
+        
         ringtoneAudio = null;
       }
     };

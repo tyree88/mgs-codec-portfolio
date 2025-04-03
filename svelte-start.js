@@ -36,7 +36,25 @@ if (!fs.existsSync(ringtonePath)) {
 }
 
 // Start the Svelte development server using npx vite with improved configuration
-const svelteProcess = spawn('npx', ['vite', '--port', '5173', '--host', '0.0.0.0', '--strictPort', '--cors']);
+console.log('Starting Svelte development server in directory:', svelteAppDir);
+// Create a public directory for static assets if it doesn't exist
+const publicDir = join(svelteAppDir, 'public');
+if (!fs.existsSync(publicDir)) {
+  fs.mkdirSync(publicDir, { recursive: true });
+  console.log(`Created public directory at ${publicDir}`);
+}
+
+// Start Vite directly with full path to ensure it finds the correct config
+const svelteProcess = spawn('npx', [
+  'vite', 
+  '--port', '5173', 
+  '--host', '0.0.0.0',
+  '--strictPort', 
+  '--cors'
+], {
+  cwd: svelteAppDir, // Ensure we're in the right directory
+  env: { ...process.env, FORCE_COLOR: "1" } // Enable colored output
+});
 
 // Log output
 svelteProcess.stdout.on('data', (data) => {
