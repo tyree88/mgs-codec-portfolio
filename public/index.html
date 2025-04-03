@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MGS2 Codec Interface</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            color: #85FF00;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            padding: 2rem;
+            border: 1px solid #85FF00;
+            border-radius: 10px;
+        }
+        h1 {
+            color: #85FF00;
+            margin-bottom: 1rem;
+        }
+        p {
+            margin-bottom: 1rem;
+        }
+        .button {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background-color: transparent;
+            color: #85FF00;
+            border: 1px solid #85FF00;
+            border-radius: 4px;
+            text-decoration: none;
+            margin-top: 1rem;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: rgba(133, 255, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Metal Gear Solid 2 Codec Interface</h1>
+        <p>CODEC STATUS: <span id="status">Checking...</span></p>
+        <p>FREQUENCY: <span id="frequency">---.--</span></p>
+        <p>LAST COMMUNICATION: <span id="lastCommunication">--:--:--</span></p>
+        <a href="/svelte-app/" class="button">Launch Codec Interface</a>
+    </div>
+
+    <script>
+        // Check the codec API status when the page loads
+        fetch('/api/codec-status')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('status').textContent = data.status;
+                document.getElementById('frequency').textContent = data.frequency;
+                document.getElementById('lastCommunication').textContent = 
+                    new Date(data.lastCommunication).toLocaleTimeString();
+            })
+            .catch(error => {
+                document.getElementById('status').textContent = 'Offline';
+                console.error('Error:', error);
+            });
+    </script>
+</body>
+</html>

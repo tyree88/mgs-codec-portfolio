@@ -64,10 +64,10 @@ app.use((req, res, next) => {
     console.error("Failed to start Svelte app:", error);
   }
 
-  // Redirect root to the Svelte app
-  app.get('/', (_req, res) => {
-    res.redirect('/svelte-app/');
-  });
+  // Root redirect is now handled in routes.ts
+  
+  // Explicitly serve the public directory
+  app.use(express.static('public'));
 
   // importantly only setup vite in development and after
   // setting up all the other routes so the catch-all route
