@@ -47,6 +47,28 @@ app.use((req, res, next) => {
     throw err;
   });
 
+  // Run Svelte app in a separate process
+  try {
+    import('child_process').then(({ exec }) => {
+      exec('node svelte-start.js', (error: Error | null, stdout: string, stderr: string) => {
+        if (error) {
+          console.error(`Svelte app execution error: ${error}`);
+          return;
+        }
+        console.log(`Svelte app output: ${stdout}`);
+        if (stderr) console.error(`Svelte app stderr: ${stderr}`);
+      });
+      log("Started Svelte app in background");
+    });
+  } catch (error: unknown) {
+    console.error("Failed to start Svelte app:", error);
+  }
+
+  // Redirect root to the Svelte app
+  app.get('/', (_req, res) => {
+    res.redirect('/svelte-app/');
+  });
+
   // importantly only setup vite in development and after
   // setting up all the other routes so the catch-all route
   // doesn't interfere with the other routes
