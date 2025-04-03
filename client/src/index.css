@@ -1,0 +1,154 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-mono antialiased bg-black text-codec-light;
+  }
+  
+  /* Overriding the default mono font with VT323 for the codec theme */
+  .font-codec {
+    font-family: 'VT323', monospace;
+  }
+}
+
+@layer components {
+  /* Hexagonal Pattern Background */
+  .hexagonal-bg {
+    @apply bg-codec-dark;
+    background-image: 
+      linear-gradient(to right, rgba(139, 172, 15, 0.1) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(139, 172, 15, 0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+  
+  /* Scanline Effect */
+  .scanline::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      to bottom,
+      transparent 50%,
+      rgba(15, 56, 15, 0.1) 51%,
+      transparent 51%
+    );
+    background-size: 100% 4px;
+    pointer-events: none;
+    z-index: 20;
+  }
+  
+  /* CRT Effect */
+  .crt-effect {
+    position: relative;
+    overflow: hidden;
+    box-shadow: inset 0 0 150px rgba(15, 56, 15, 0.5);
+  }
+  
+  .crt-effect::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(
+      ellipse at center,
+      transparent 50%,
+      rgba(15, 56, 15, 0.15) 100%
+    );
+    pointer-events: none;
+    z-index: 19;
+  }
+  
+  /* Static Noise Effect */
+  .static-effect {
+    position: relative;
+  }
+  
+  .static-effect::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
+    pointer-events: none;
+    opacity: 0.15;
+    z-index: 18;
+  }
+  
+  /* Custom scrollbar for codec interface */
+  .codec-scroll::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .codec-scroll::-webkit-scrollbar-track {
+    background: #0f380f;
+  }
+  
+  .codec-scroll::-webkit-scrollbar-thumb {
+    background: #8bac0f;
+  }
+
+  /* Progress bars in frequency display */
+  .progress-bars div {
+    height: 6px;
+    margin-bottom: 4px;
+  }
+  
+  /* Active frequency state */
+  .frequency-active {
+    box-shadow: 0 0 10px #8bac0f, inset 0 0 5px #8bac0f;
+  }
+}
+
+@layer utilities {
+  /* Animation keyframes */
+  @keyframes scanline {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(100%); }
+  }
+  
+  @keyframes static {
+    0% { opacity: 0.4; }
+    100% { opacity: 0.6; }
+  }
+  
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+  
+  @keyframes flicker {
+    0%, 100% { opacity: 0.97; }
+    33% { opacity: 0.95; }
+    66% { opacity: 0.98; }
+  }
+
+  .animate-scanline {
+    animation: scanline 8s linear infinite;
+  }
+  
+  .animate-static {
+    animation: static 0.5s steps(3) infinite;
+  }
+  
+  .animate-blink {
+    animation: blink 2s steps(2) infinite;
+  }
+  
+  .animate-flicker {
+    animation: flicker 5s linear infinite;
+  }
+}
