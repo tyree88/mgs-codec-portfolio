@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import VT323 font - assuming it will be added to static/fonts */
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
+body {
+  @apply bg-codec-dark text-codec-light font-mono;
+  /* Add other base styles if needed */
+}

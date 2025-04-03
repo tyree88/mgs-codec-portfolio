@@ -1,23 +1,21 @@
 {
-  "include": ["client/src/**/*", "shared/**/*", "server/**/*"],
-  "exclude": ["node_modules", "build", "dist", "**/*.test.ts"],
+  "extends": "./.svelte-kit/tsconfig.json",
   "compilerOptions": {
-    "incremental": true,
-    "tsBuildInfoFile": "./node_modules/typescript/tsbuildinfo",
-    "noEmit": true,
-    "module": "ESNext",
-    "strict": true,
-    "lib": ["esnext", "dom", "dom.iterable"],
-    "jsx": "preserve",
+    "allowJs": true,
+    "checkJs": true,
     "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
     "skipLibCheck": true,
-    "allowImportingTsExtensions": true,
-    "moduleResolution": "bundler",
+    "sourceMap": true,
+    "strict": true,
+    "moduleResolution": "bundler", // Or "NodeNext" if preferred
     "baseUrl": ".",
-    "types": ["node", "vite/client"],
     "paths": {
-      "@/*": ["./client/src/*"],
-      "@shared/*": ["./shared/*"]
+      "$lib": ["src/lib"],
+      "$lib/*": ["src/lib/*"]
     }
   }
+  // Add excludes if needed, e.g. for node_modules, build, etc.
+  // "exclude": ["node_modules/**", ".svelte-kit/**"] 
 }
